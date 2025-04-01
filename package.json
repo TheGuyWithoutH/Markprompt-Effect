@@ -1,0 +1,25 @@
+{
+  "name": "markprompt-trial",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"redis-server\" \"cd packages/server && npm run start\" \"cd packages/client && npm run dev\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "packages/server",
+    "packages/client"
+  ],
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "^1.2.8",
+    "concurrently": "^8.0.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
