@@ -1,6 +1,7 @@
 import { Effect, pipe } from "effect";
 import { parseUser } from "src/data/user.js";
 import {
+  changeTier,
   createApiKey,
   retrieveUser,
   retrieveUsers,
@@ -84,31 +85,31 @@ const createUser = (req: Request) =>
     )
   );
 
-// const changeTierUser = (req: Request) =>
-//   pipe(
-//     Effect.tryPromise(() => req.json()), // Get query from body
-//     Effect.map((body) => ({ id: body.id, newTier: body.newTier })),
-//     Effect.flatMap(({ id, newTier }) => changeTier(id, newTier)),
-//     Effect.map(
-//       () =>
-//         new Response("", {
-//           status: 204,
-//           headers: {
-//             "Content-Type": "application/json; charset=utf-8",
-//             "Access-Control-Allow-Origin": "*",
-//           },
-//         })
-//     ),
-//     Effect.catchAll((error) =>
-//       Effect.succeed(
-//         new Response(`Error: ${error.message}`, {
-//           status: 500,
-//           headers: {
-//             "Access-Control-Allow-Origin": "*",
-//           },
-//         })
-//       )
-//     )
-//   );
+const changeTierUser = (req: Request) =>
+  pipe(
+    Effect.tryPromise(() => req.json()), // Get query from body
+    Effect.map((body) => ({ id: body.id, newTier: body.newTier })),
+    Effect.flatMap(({ id, newTier }) => changeTier(id, newTier)),
+    Effect.map(
+      () =>
+        new Response("", {
+          status: 204,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+          },
+        })
+    ),
+    Effect.catchAll((error) =>
+      Effect.succeed(
+        new Response(`Error: ${error.message}`, {
+          status: 500,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        })
+      )
+    )
+  );
 
-export { getUser, getUsers, createUser };
+export { getUser, getUsers, createUser, changeTierUser };

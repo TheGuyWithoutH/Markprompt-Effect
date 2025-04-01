@@ -7,7 +7,12 @@ import {
   saveChat,
 } from "./api/ChatAPI.js";
 import { getRateStats } from "./api/RateLimitAPI.js";
-import { createUser, getUser, getUsers } from "./api/UserAPI.js";
+import {
+  changeTierUser,
+  createUser,
+  getUser,
+  getUsers,
+} from "./api/UserAPI.js";
 import { KeyStoreClient, redisClient } from "./repository/redis.js";
 
 // Connect to Redis
@@ -106,12 +111,14 @@ Bun.serve({
       },
     },
     // Change subscription of an account
-    // "/change-tier": {
-    //   POST: async (req: Request): Promise<Response> => {
-    //     const response = await Effect.runPromise(changeTierUser(req));
-    //     return response;
-    //   },
-    // },
+    "/change-tier": {
+      POST: async (req: Request): Promise<Response> => {
+        const response = await Effect.runPromise(
+          changeTierUser(req).pipe(redisClient)
+        );
+        return response;
+      },
+    },
   },
 
   // (optional) fallback for unmatched routes:

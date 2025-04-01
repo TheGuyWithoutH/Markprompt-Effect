@@ -168,7 +168,9 @@ const verifyApiKey = (key: string) =>
 
         // If the user was not found, return null
         if (keyProps == null || Object.keys(keyProps).length === 0) {
-          throw new Error(`Key not found:` + JSON.stringify(keyProps));
+          throw new Error(
+            `Key not found:` + JSON.stringify(keyProps) + " for key: " + key
+          );
         }
 
         return keyProps.user_id;

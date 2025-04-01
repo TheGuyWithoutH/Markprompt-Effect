@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -12,6 +12,14 @@ import {
 } from "@/components/ui/table";
 import { RateLimitApi, UserApi } from "@/service/backend";
 import User from "@/data/user";
+import { Tier } from "@/data/tiers";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type UserRate = {
   user: string;
@@ -22,6 +30,7 @@ type UserRate = {
 export default function UserRequestsPage() {
   const [userRates, setUserRates] = useState<UserRate>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const tiers = [Tier.FREE, Tier.PLUS, Tier.PRO];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -36,6 +45,23 @@ export default function UserRequestsPage() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Handle dropdown changes by calling the API and updating the state.
+  const handleTierChange = (userId: string, newTier: number) => {
+    UserApi.changeTier(userId, Tier.fromNumber(newTier))
+      .then(() => {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId
+              ? new User(userId, user.username, Tier.fromNumber(newTier))
+              : user
+          )
+        );
+      })
+      .catch((err: Error) => {
+        console.error("Error updating user tier:", err);
+      });
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -88,10 +114,28 @@ export default function UserRequestsPage() {
                 <TableRow key={user.id}>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.id}</TableCell>
-                  <TableCell>{
-                    // @ts-ignore
-                    `${user.tier}`
-                  }</TableCell>
+                  <TableCell>
+                    <Select
+                      value={`${user.tier.limit}`}
+                      onValueChange={(value) =>
+                        handleTierChange(user.id, parseInt(value))
+                      }
+                    >
+                      <SelectTrigger className="w-[150px]">
+                        <SelectValue placeholder="Select tier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tiers.map((tier) => (
+                          <SelectItem
+                            key={tier.toString()}
+                            value={`${tier.limit}`}
+                          >
+                            {tier.toString()}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

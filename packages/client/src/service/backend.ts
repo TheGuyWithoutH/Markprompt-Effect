@@ -255,6 +255,34 @@ export const UserApi = {
       return handleError(error);
     }
   },
+
+  /**
+   * Create a new user
+   * @param user The user data to create
+   * @returns A readable stream with the create response
+   */
+  changeTier: async (userId: string, newTier: Tier): Promise<void> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/change-tier`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: userId,
+          newTier: {
+            limit: newTier.limit,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+    } catch (error) {
+      return handleError(error);
+    }
+  },
 };
 
 export default ChatApi;
